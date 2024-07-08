@@ -1,9 +1,13 @@
 package com.br.projeto.estoque.contoledecaixa.service.impl;
 
+import com.br.projeto.estoque.contoledecaixa.dto.ProdutoDTO;
 import com.br.projeto.estoque.contoledecaixa.dto.TransacaoFinanceiraDTO;
+import com.br.projeto.estoque.contoledecaixa.model.Produto;
 import com.br.projeto.estoque.contoledecaixa.model.TransacaoFinanceira;
 import com.br.projeto.estoque.contoledecaixa.repository.TransacaoFinanceiraRepository;
 import com.br.projeto.estoque.contoledecaixa.service.TransacaoFinanceiraService;
+import com.br.projeto.estoque.contoledecaixa.utils.AtualizarEntidades;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,8 +39,18 @@ public class TransacaoFinanceiraServiceImpl implements TransacaoFinanceiraServic
     }
 
     @Override
-    public TransacaoFinanceiraDTO atualizarTransacaoFinanceira(Long id) {
-        return null;
+    public TransacaoFinanceiraDTO atualizarTransacaoFinanceira(Long id, TransacaoFinanceiraDTO transacaoFinanceiraDTO) {
+        TransacaoFinanceira transacaExistente = transacaoFinanceiraRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra não encontrada com o ID: " + id));
+
+        // Atualiza os dados da compra existente com os dados do compraDTO
+        TransacaoFinanceira transacaoValidada = AtualizarEntidades.atualizarTransacaoFinaceira(transacaExistente, transacaoFinanceiraDTO);
+
+        // Salva a compra atualizada no banco de dados
+        TransacaoFinanceira transacaoAtualizada = transacaoFinanceiraRepository.save(transacaoValidada);
+
+        // Retorna o CompraDTO correspondente à compra atualizada
+        return modelMapper.map(transacaoAtualizada, TransacaoFinanceiraDTO.class);
     }
 
     @Override

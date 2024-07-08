@@ -1,6 +1,8 @@
 package com.br.projeto.estoque.contoledecaixa.dto;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class ProdutoDTO {
     private Long id;
@@ -9,4 +11,5 @@ public class ProdutoDTO {
     private double precoVenda;
     private double precoCompra;
     private int quantidadeEstoque;
+    private List<FornecedorDTO> fornecedores;
 }

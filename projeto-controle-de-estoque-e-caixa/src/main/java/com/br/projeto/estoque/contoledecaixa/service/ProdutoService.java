@@ -8,7 +8,7 @@ import java.util.List;
 public interface ProdutoService {
     List<ProdutoDTO> listarProdutos();
     ProdutoDTO salvarProduto(ProdutoDTO produto);
-    ProdutoDTO atualizarProduto(Long id);
+    ProdutoDTO atualizarProduto(Long id, ProdutoDTO produtoDTO);
     ProdutoDTO buscarProdutoPorId(Long id);
     void deletarProduto(Long id);
 }

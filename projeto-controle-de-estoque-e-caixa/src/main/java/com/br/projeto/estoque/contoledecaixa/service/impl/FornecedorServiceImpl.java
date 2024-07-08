@@ -1,8 +1,12 @@
 package com.br.projeto.estoque.contoledecaixa.service.impl;
+import com.br.projeto.estoque.contoledecaixa.dto.CompraDTO;
 import com.br.projeto.estoque.contoledecaixa.dto.FornecedorDTO;
+import com.br.projeto.estoque.contoledecaixa.model.Compra;
 import com.br.projeto.estoque.contoledecaixa.model.Fornecedor;
 import com.br.projeto.estoque.contoledecaixa.repository.FornecedorRepository;
 import com.br.projeto.estoque.contoledecaixa.service.FornecedorService;
+import com.br.projeto.estoque.contoledecaixa.utils.AtualizarEntidades;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +38,18 @@ public class FornecedorServiceImpl implements FornecedorService {
     }
 
     @Override
-    public FornecedorDTO atualizarFornecedor(Long id) {
-        return null;
+    public FornecedorDTO atualizarFornecedor(Long id, FornecedorDTO fornecedorDTO) {
+        Fornecedor fornecedorExistente = fornecedorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra não encontrada com o ID: " + id));
+
+        // Atualiza os dados da compra existente com os dados do compraDTO
+        Fornecedor fornecedorValidado = AtualizarEntidades.atualizarFornecedor(fornecedorExistente, fornecedorDTO);
+
+        // Salva a compra atualizada no banco de dados
+        Fornecedor fornecedorAtualizado = fornecedorRepository.save(fornecedorValidado);
+
+        // Retorna o CompraDTO correspondente à compra atualizada
+        return modelMapper.map(fornecedorAtualizado, FornecedorDTO.class);
     }
 
     @Override

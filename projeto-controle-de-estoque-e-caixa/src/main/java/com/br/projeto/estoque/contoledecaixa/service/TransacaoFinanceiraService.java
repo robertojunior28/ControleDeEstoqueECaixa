@@ -8,7 +8,7 @@ import java.util.List;
 public interface TransacaoFinanceiraService {
     List<TransacaoFinanceiraDTO> listarTransacoesFinanceiras();
     TransacaoFinanceiraDTO salvarTransacaoFinanceira(TransacaoFinanceiraDTO transacaoFinanceira);
-    TransacaoFinanceiraDTO atualizarTransacaoFinanceira(Long id);
+    TransacaoFinanceiraDTO atualizarTransacaoFinanceira(Long id, TransacaoFinanceiraDTO transacaoFinanceiraDTO);
     TransacaoFinanceiraDTO buscarTransacaoFinanceiraPorId(Long id);
     void deletarTransacaoFinanceira(Long id);
 }

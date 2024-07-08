@@ -7,7 +7,7 @@ import java.util.List;
 public interface VendaService {
     List<VendaDTO> listarVendas();
     VendaDTO salvarVenda(VendaDTO venda);
-    VendaDTO atualizarVenda(Long id);
+    VendaDTO atualizarVenda(Long id, VendaDTO vendaDTO);
     VendaDTO buscarVendaPorId(Long id);
     void deletarVenda(Long id);
 }

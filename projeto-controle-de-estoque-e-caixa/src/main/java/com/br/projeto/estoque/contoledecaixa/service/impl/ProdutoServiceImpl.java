@@ -1,8 +1,12 @@
 package com.br.projeto.estoque.contoledecaixa.service.impl;
+import com.br.projeto.estoque.contoledecaixa.dto.MovimentacaoEstoqueDTO;
 import com.br.projeto.estoque.contoledecaixa.dto.ProdutoDTO;
+import com.br.projeto.estoque.contoledecaixa.model.MovimentacaoEstoque;
 import com.br.projeto.estoque.contoledecaixa.model.Produto;
 import com.br.projeto.estoque.contoledecaixa.repository.ProdutoRepository;
 import com.br.projeto.estoque.contoledecaixa.service.ProdutoService;
+import com.br.projeto.estoque.contoledecaixa.utils.AtualizarEntidades;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +38,18 @@ public class ProdutoServiceImpl implements ProdutoService {
     }
 
     @Override
-    public ProdutoDTO atualizarProduto(Long id) {
-        return null;
+    public ProdutoDTO atualizarProduto(Long id, ProdutoDTO produtoDTO) {
+        Produto produtoExistente = produtoRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra não encontrada com o ID: " + id));
+
+        // Atualiza os dados da compra existente com os dados do compraDTO
+        Produto produtoValidado = AtualizarEntidades.atualizarProduto(produtoExistente, produtoDTO);
+
+        // Salva a compra atualizada no banco de dados
+        Produto produtoAtualizado = produtoRepository.save(produtoValidado);
+
+        // Retorna o CompraDTO correspondente à compra atualizada
+        return modelMapper.map(produtoAtualizado, ProdutoDTO.class);
     }
 
     @Override

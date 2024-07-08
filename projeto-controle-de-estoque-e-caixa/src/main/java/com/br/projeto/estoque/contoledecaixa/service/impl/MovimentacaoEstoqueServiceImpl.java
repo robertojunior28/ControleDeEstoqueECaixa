@@ -1,8 +1,12 @@
 package com.br.projeto.estoque.contoledecaixa.service.impl;
+import com.br.projeto.estoque.contoledecaixa.dto.FornecedorDTO;
 import com.br.projeto.estoque.contoledecaixa.dto.MovimentacaoEstoqueDTO;
+import com.br.projeto.estoque.contoledecaixa.model.Fornecedor;
 import com.br.projeto.estoque.contoledecaixa.model.MovimentacaoEstoque;
 import com.br.projeto.estoque.contoledecaixa.repository.MovimentacaoEstoqueRepository;
 import com.br.projeto.estoque.contoledecaixa.service.MovimentacaoEstoqueService;
+import com.br.projeto.estoque.contoledecaixa.utils.AtualizarEntidades;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +38,18 @@ public class MovimentacaoEstoqueServiceImpl implements MovimentacaoEstoqueServic
     }
 
     @Override
-    public MovimentacaoEstoqueDTO atualizarMovimentacaoEstoque(Long id) {
-        return null;
+    public MovimentacaoEstoqueDTO atualizarMovimentacaoEstoque(Long id, MovimentacaoEstoqueDTO movimentacaoEstoqueDTO) {
+        MovimentacaoEstoque movimentacaoExistente = movimentacaoEstoqueRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Compra não encontrada com o ID: " + id));
+
+        // Atualiza os dados da compra existente com os dados do compraDTO
+        MovimentacaoEstoque movimentacaoValidada = AtualizarEntidades.atualizarMovimentacaoEstoque(movimentacaoExistente, movimentacaoEstoqueDTO);
+
+        // Salva a compra atualizada no banco de dados
+        MovimentacaoEstoque movimentacaoAtualizada = movimentacaoEstoqueRepository.save(movimentacaoValidada);
+
+        // Retorna o CompraDTO correspondente à compra atualizada
+        return modelMapper.map(movimentacaoAtualizada, MovimentacaoEstoqueDTO.class);
     }
 
     @Override

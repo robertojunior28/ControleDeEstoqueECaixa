@@ -1,18 +1,18 @@
 package com.br.projeto.estoque.contoledecaixa.utils;
 
-import com.br.projeto.estoque.contoledecaixa.dto.ClienteDTO;
-import com.br.projeto.estoque.contoledecaixa.dto.CompraDTO;
-import com.br.projeto.estoque.contoledecaixa.dto.FornecedorDTO;
-import com.br.projeto.estoque.contoledecaixa.dto.ProdutoDTO;
-import com.br.projeto.estoque.contoledecaixa.model.Cliente;
-import com.br.projeto.estoque.contoledecaixa.model.Compra;
-import com.br.projeto.estoque.contoledecaixa.model.Fornecedor;
-import com.br.projeto.estoque.contoledecaixa.model.Produto;
+import com.br.projeto.estoque.contoledecaixa.dto.*;
+import com.br.projeto.estoque.contoledecaixa.model.*;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class AtualizarEntidades {
+    private static ModelMapper mapper = new ModelMapper();
+
     /**
      * Método criado com a finalidade de ajudar na atualização da entidade Cliente,
      * ele verifica se os atibutos não estão em branco ou ou preenchidos com espaços em branco
@@ -130,6 +130,94 @@ public class AtualizarEntidades {
             compraExistente.setItensComprados(AtualizarEntidades.atualizarProdutosDaCompra(compraExistente.getItensComprados(), compraDTO.getItensComprados()));
         }
         return compraExistente;
+    }
+
+    public static MovimentacaoEstoque atualizarMovimentacaoEstoque(MovimentacaoEstoque movimentacaoBancoDeDados, MovimentacaoEstoqueDTO movimentacaoDTO){
+        MovimentacaoEstoque movimentacaoExistente = movimentacaoBancoDeDados;
+        if(movimentacaoDTO.getDataMovimentacao() != null){
+            movimentacaoExistente.setDataMovimentacao(movimentacaoDTO.getDataMovimentacao());
+        }
+        if(!movimentacaoDTO.getTipo().isEmpty() && !movimentacaoDTO.getTipo().isBlank()){
+            movimentacaoExistente.setTipo(movimentacaoDTO.getTipo());
+        }
+        if(movimentacaoDTO.getProduto() != null){
+            movimentacaoExistente.setProduto(mapper.map(movimentacaoDTO.getProduto(), Produto.class));
+        }
+        if(movimentacaoDTO.getQuantidade() > 0){
+            movimentacaoExistente.setQuantidade(movimentacaoDTO.getQuantidade());
+        }
+        return movimentacaoExistente;
+    }
+
+    public static Produto atualizarProduto(Produto produtoBancoDeDados, ProdutoDTO produtoDTO){
+        Produto produtoExistente = produtoBancoDeDados;
+        if(!produtoDTO.getNome().isEmpty() && !produtoDTO.getNome().isBlank()){
+            produtoExistente.setNome(produtoDTO.getNome());
+        }
+        if(!produtoDTO.getDescricao().isEmpty() && !produtoDTO.getDescricao().isBlank()){
+            produtoExistente.setDescricao(produtoDTO.getDescricao());
+        }
+        if(produtoDTO.getQuantidadeEstoque() >= 0){
+            produtoExistente.setQuantidadeEstoque(produtoDTO.getQuantidadeEstoque());
+        }
+        if(produtoDTO.getPrecoCompra() > 0){
+            produtoExistente.setPrecoCompra(produtoDTO.getPrecoCompra());
+        }
+        if(produtoDTO.getPrecoVenda() > 0){
+            produtoExistente.setPrecoVenda(produtoDTO.getPrecoVenda());
+        }
+        if(produtoDTO.getFornecedores() != null) {
+            List<FornecedorDTO> fornecedoresDTO = produtoDTO.getFornecedores();
+
+            // Itera sobre os fornecedores do DTO e atualiza apenas se houver informações
+            for (FornecedorDTO fornecedorDTO : fornecedoresDTO) {
+                // Verifica se o fornecedor já existe no produtoExistente
+                Optional<Fornecedor> fornecedorExistenteOpt = produtoExistente.getFornecedores().stream()
+                        .filter(f -> f.getId().equals(fornecedorDTO.getId()))
+                        .findFirst();
+
+                if (fornecedorExistenteOpt.isPresent()) {
+                    Fornecedor fornecedorExistente = fornecedorExistenteOpt.get();
+                    AtualizarEntidades.atualizarFornecedor(fornecedorExistente, fornecedorDTO);
+                }
+            }
+        }
+        return produtoExistente;
+    }
+
+    public static TransacaoFinanceira atualizarTransacaoFinaceira(TransacaoFinanceira transacaoBancoDeDados, TransacaoFinanceiraDTO transacaoDTO){
+        TransacaoFinanceira transacaoFinanceira = transacaoBancoDeDados;
+        if(transacaoDTO.getDataTransacao() != null){
+            transacaoFinanceira.setDataTransacao(transacaoDTO.getDataTransacao());
+        }
+        if(!transacaoDTO.getDescricao().isEmpty() && !transacaoDTO.getDescricao().isBlank()){
+            transacaoFinanceira.setDescricao(transacaoDTO.getDescricao());
+        }
+        if(!transacaoDTO.getTipo().isEmpty() && !transacaoDTO.getTipo().isBlank()){
+            transacaoFinanceira.setTipo(transacaoDTO.getTipo());
+        }
+        if(transacaoDTO.getValor() >= 0){
+            transacaoFinanceira.setValor(transacaoDTO.getValor());
+        }
+        return transacaoFinanceira;
+    }
+
+    public static Venda atualizarVenda(Venda vendaBancoDeDados, VendaDTO vendaDTO){
+        Venda venda = vendaBancoDeDados;
+        if(vendaDTO.getDataVenda() != null){
+            venda.setDataVenda(vendaDTO.getDataVenda());
+        }
+        if(vendaDTO.getTotalVenda() >= 0){
+            venda.setTotalVenda(vendaDTO.getTotalVenda());
+        }
+        if(vendaDTO.getCliente() != null){
+            venda.setCliente(mapper.map(vendaDTO.getCliente(), Cliente.class));
+        }
+        if(vendaDTO.getItensVendidos() != null){
+            List<Produto> listaProdutos = venda.getItensVendidos();
+            venda.setItensVendidos(AtualizarEntidades.atualizarProdutosDaCompra(listaProdutos, vendaDTO.getItensVendidos()));
+        }
+        return venda;
     }
 
 }

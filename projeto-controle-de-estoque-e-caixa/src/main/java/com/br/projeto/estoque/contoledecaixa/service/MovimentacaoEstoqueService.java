@@ -8,7 +8,7 @@ import java.util.List;
 public interface MovimentacaoEstoqueService {
     List<MovimentacaoEstoqueDTO> listarMovimentacoesEstoque();
     MovimentacaoEstoqueDTO salvarMovimentacaoEstoque(MovimentacaoEstoqueDTO movimentacaoEstoque);
-    MovimentacaoEstoqueDTO atualizarMovimentacaoEstoque(Long id);
+    MovimentacaoEstoqueDTO atualizarMovimentacaoEstoque(Long id, MovimentacaoEstoqueDTO movimentacaoEstoqueDTO);
     MovimentacaoEstoqueDTO buscarMovimentacaoEstoquePorId(Long id);
     void deletarMovimentacaoEstoque(Long id);
 }
